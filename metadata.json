@@ -1,5 +1,5 @@
 {
-  "name": "AI Art Prompt Architect",
-  "description": "An advanced prompt generator for AI image models like Midjourney V7 and Flux Kontext. Users can generate highly detailed prompts from text descriptions or by uploading an image for analysis.",
+  "name": "ZYS AI Art Prompt Generator(MJ/NANO)",
+  "description": "An advanced prompt generator for AI image models like Midjourney V7 and Nano Banana Pro. Users can generate highly detailed prompts from text descriptions or by uploading an image for analysis.",
   "requestFramePermissions": []
 }

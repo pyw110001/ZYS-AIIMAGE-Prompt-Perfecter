@@ -1,16 +1,9 @@
-
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { AiModel } from '../types';
 
-if (!process.env.API_KEY) {
-    throw new Error("API_KEY environment variable not set");
-}
-
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 const modelPrompts = {
     [AiModel.MIDJOURNEY]: `You are an expert prompt engineer for Midjourney. Your task is to create a highly detailed and effective prompt for Midjourney V7. The prompt should be a single, cohesive string. Include specific keywords for style (e.g., photorealistic, cinematic, 8k, octane render), composition (e.g., wide shot, portrait), lighting (e.g., volumetric lighting, golden hour), and detail. Emphasize artistic styles as appropriate. Always consider adding relevant parameters like --ar 16:9, --style raw, or --v 7. Do not add any explanatory text, just the prompt itself.`,
-    [AiModel.FLUX]: `You are an expert prompt creator for Flux Kontext. Your task is to generate an optimized prompt. The prompt should be a single string focusing on clear, descriptive natural language. Construct a narrative or descriptive sentence detailing the subject, their actions, the setting, the overall artistic style, and the mood. Flux prefers natural language over comma-separated keywords. Do not add any explanatory text, just the prompt itself.`
+    [AiModel.NANO_BANANA]: `You are an expert prompt creator for Nano Banana Pro (Gemini 3 Pro Image). Your task is to generate an optimized prompt. The prompt should be a single string focusing on clear, descriptive natural language. Construct a narrative or descriptive sentence detailing the subject, their actions, the setting, the overall artistic style, and the mood. Nano Banana Pro excels with detailed natural language descriptions rather than comma-separated tags. Do not add any explanatory text, just the prompt itself.`
 };
 
 const fileToGenerativePart = async (file: File) => {
@@ -39,6 +32,7 @@ export const generatePrompt = async (
     textInput: string,
     imageInput: File | null
 ): Promise<string> => {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const systemInstruction = modelPrompts[model];
     let userPrompt: string;
     const parts: any[] = [];
@@ -55,7 +49,7 @@ export const generatePrompt = async (
 
     try {
         const response: GenerateContentResponse = await ai.models.generateContent({
-            model: 'gemini-2.5-flash',
+            model: 'gemini-3-flash-preview',
             contents: { parts },
             config: {
                 systemInstruction: systemInstruction,
@@ -64,7 +58,7 @@ export const generatePrompt = async (
             }
         });
 
-        const resultText = response.text.trim();
+        const resultText = response.text?.trim();
         if (!resultText) {
             throw new Error("Received an empty response from the AI. Try rephrasing your input.");
         }
@@ -73,5 +67,52 @@ export const generatePrompt = async (
     } catch (error) {
         console.error("Gemini API Error:", error);
         throw new Error("Failed to generate prompt. The model may be unavailable or the input might be inappropriate.");
+    }
+};
+
+export const generateImage = async (
+    prompt: string, 
+    referenceImage: File | null = null,
+    aspectRatio: string = "1:1"
+): Promise<string> => {
+    // Create a new instance to ensure we use the latest API key (e.g. if selected via window.aistudio)
+    const aiInstance = new GoogleGenAI({ apiKey: process.env.API_KEY });
+
+    const parts: any[] = [];
+    
+    // Add reference image first if available (for consistency/context)
+    if (referenceImage) {
+        const imagePart = await fileToGenerativePart(referenceImage);
+        parts.push(imagePart);
+    }
+    
+    parts.push({ text: prompt });
+
+    try {
+        const response: GenerateContentResponse = await aiInstance.models.generateContent({
+            model: 'gemini-3-pro-image-preview',
+            contents: {
+                parts: parts
+            },
+            config: {
+                imageConfig: {
+                    aspectRatio: aspectRatio,
+                    imageSize: "1K"
+                }
+            }
+        });
+
+        if (response.candidates?.[0]?.content?.parts) {
+            for (const part of response.candidates[0].content.parts) {
+                if (part.inlineData && part.inlineData.data) {
+                    return `data:image/png;base64,${part.inlineData.data}`;
+                }
+            }
+        }
+        
+        throw new Error("No image generated.");
+    } catch (error) {
+        console.error("Gemini Image Gen Error:", error);
+        throw error;
     }
 };

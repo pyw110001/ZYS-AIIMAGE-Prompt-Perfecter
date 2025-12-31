@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { AiModel } from '../types';
 
@@ -8,21 +7,23 @@ interface ModelSelectorProps {
 }
 
 export default function ModelSelector({ selectedModel, onSelectModel }: ModelSelectorProps): React.ReactNode {
-  const models = [AiModel.MIDJOURNEY, AiModel.FLUX];
+  const models = [AiModel.MIDJOURNEY, AiModel.NANO_BANANA];
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4 bg-gray-900/50 p-2 rounded-xl border border-gray-700">
-      {models.map((model) => (
+    <div className="flex flex-col sm:flex-row gap-0 border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-black">
+      {models.map((model, index) => (
         <button
           key={model}
           onClick={() => onSelectModel(model)}
-          className={`w-full text-center px-6 py-3 rounded-lg font-semibold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-cyan-500/80 ${
-            selectedModel === model
-              ? 'bg-cyan-500 text-gray-900 shadow-lg'
-              : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-          }`}
+          className={`flex-1 text-center px-4 py-4 font-bold text-sm tracking-wide uppercase transition-all duration-300 focus:outline-none 
+            ${selectedModel === model
+              ? 'bg-brand-red text-white'
+              : 'bg-transparent text-gray-500 hover:text-black dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-900'
+            }
+            ${index === 0 ? 'border-b sm:border-b-0 sm:border-r border-gray-200 dark:border-gray-800' : ''}
+          `}
         >
-          {model}
+          {model === AiModel.MIDJOURNEY ? 'Midjourney V7' : 'Nano Banana'}
         </button>
       ))}
     </div>

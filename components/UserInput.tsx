@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { PhotoIcon, XCircleIcon } from './Icons';
 
@@ -34,29 +33,33 @@ export default function UserInput({ textInput, onTextInput, onImageUpload, isLoa
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
+    <div className="flex flex-col gap-0 h-full min-h-0 border border-gray-200 dark:border-gray-800 bg-white dark:bg-black">
       <textarea
         value={textInput}
         onChange={(e) => onTextInput(e.target.value)}
-        placeholder="e.g., a cybernetic fox wandering through a neon-lit ancient forest..."
-        className="w-full h-48 p-4 bg-gray-900/50 border border-gray-600 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-colors duration-300 resize-none disabled:opacity-50"
+        placeholder="TYPE YOUR VISION HERE..."
+        className="flex-1 w-full p-4 bg-transparent border-b border-gray-200 dark:border-gray-800 text-black dark:text-white placeholder-gray-400 focus:outline-none focus:bg-gray-50 dark:focus:bg-gray-900 transition-colors duration-300 resize-none disabled:opacity-50 text-sm font-mono leading-relaxed min-h-[150px] rounded-none"
         disabled={isLoading || !!imagePreview}
       />
-      <div className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-600 rounded-lg p-4 relative transition-colors duration-300 hover:border-cyan-500">
+      
+      <div className={`relative transition-all duration-300 ${imagePreview ? 'h-40' : 'h-16 hover:bg-gray-50 dark:hover:bg-gray-900'}`}>
         {imagePreview ? (
-          <>
-            <img src={imagePreview} alt="Image preview" className="max-h-full max-w-full object-contain rounded-md" />
+          <div className="w-full h-full p-0 relative group">
+            <img src={imagePreview} alt="Preview" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
             <button
               onClick={handleRemoveImage}
-              className="absolute -top-3 -right-3 bg-gray-800 rounded-full text-gray-400 hover:text-white hover:bg-red-600 transition-all"
+              className="absolute top-2 right-2 bg-brand-red text-white p-1 hover:bg-red-700 transition-colors shadow-none rounded-none"
               aria-label="Remove image"
               disabled={isLoading}
             >
               <XCircleIcon />
             </button>
-          </>
+            <div className="absolute bottom-0 left-0 bg-brand-red text-white text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
+                Reference Active
+            </div>
+          </div>
         ) : (
-          <div className="text-center">
+          <div className="w-full h-full">
             <input
               type="file"
               ref={fileInputRef}
@@ -66,14 +69,10 @@ export default function UserInput({ textInput, onTextInput, onImageUpload, isLoa
               id="image-upload"
               disabled={isLoading}
             />
-            <label htmlFor="image-upload" className={`cursor-pointer ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}>
-                <div className="flex flex-col items-center text-gray-400">
-                    <PhotoIcon />
-                    <p className="mt-2 font-semibold text-cyan-400">Upload an image</p>
-                    <p className="text-xs">PNG, JPG, WEBP</p>
-                </div>
+            <label htmlFor="image-upload" className={`cursor-pointer w-full h-full flex items-center justify-center gap-2 text-gray-500 hover:text-brand-red dark:hover:text-brand-red transition-colors ${isLoading ? 'cursor-not-allowed opacity-50' : ''}`}>
+                <PhotoIcon />
+                <span className="text-xs font-bold uppercase tracking-widest">Upload Reference</span>
             </label>
-            <p className="mt-2 text-gray-500">or describe it in the text box</p>
           </div>
         )}
       </div>

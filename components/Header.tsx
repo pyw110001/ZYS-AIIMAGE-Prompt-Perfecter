@@ -1,19 +1,33 @@
-
 import React from 'react';
-import { BrainCircuitIcon } from './Icons';
+import { BrainCircuitIcon, SunIcon, MoonIcon } from './Icons';
 
-export default function Header(): React.ReactNode {
+interface HeaderProps {
+  isDarkMode: boolean;
+  toggleTheme: () => void;
+}
+
+export default function Header({ isDarkMode, toggleTheme }: HeaderProps): React.ReactNode {
   return (
-    <header className="text-center">
-        <div className="inline-flex items-center justify-center gap-4">
-            <BrainCircuitIcon />
-            <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-teal-500">
-                AI Art Prompt Architect
-            </h1>
+    <header className="flex items-center justify-between px-6 py-4 bg-white dark:bg-brand-black border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
+        <div className="flex items-center gap-3">
+            <div className="bg-brand-red p-1">
+                <BrainCircuitIcon className="w-8 h-8 text-white" />
+            </div>
+            <div>
+                <h1 className="text-2xl font-black tracking-tighter uppercase text-black dark:text-white leading-none">
+                    Z<span className="text-brand-red">.</span>AI
+                </h1>
+                <p className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase mt-0.5">Prompt Architecture Studio</p>
+            </div>
         </div>
-      <p className="mt-4 text-lg text-gray-400 max-w-2xl mx-auto">
-        Craft the perfect prompt for your AI masterpieces. Turn simple ideas or reference images into detailed instructions for Midjourney & Flux.
-      </p>
+        
+        <button 
+            onClick={toggleTheme}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors text-black dark:text-white"
+            aria-label="Toggle theme"
+        >
+            {isDarkMode ? <SunIcon /> : <MoonIcon />}
+        </button>
     </header>
   );
 }
