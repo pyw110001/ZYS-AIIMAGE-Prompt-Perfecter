@@ -8,6 +8,7 @@ export interface HistoryItem {
   id: string;
   model: AiModel;
   prompt: string;
+  translation?: string;
   originalInput: string;
   timestamp: number;
 }

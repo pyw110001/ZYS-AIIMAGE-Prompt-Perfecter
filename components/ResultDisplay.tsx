@@ -4,6 +4,7 @@ import { ClipboardIcon, CheckIcon, LoadingSpinner, PhotoIcon, XCircleIcon, Spark
 
 interface ResultDisplayProps {
   prompt: string;
+  translation?: string;
   isLoading: boolean;
   selectedModel: AiModel;
   onGenerateImage: (referenceImage: File | null, aspectRatio: string) => void;
@@ -13,6 +14,7 @@ interface ResultDisplayProps {
 
 export default function ResultDisplay({ 
     prompt, 
+    translation,
     isLoading, 
     selectedModel,
     onGenerateImage,
@@ -83,16 +85,29 @@ export default function ResultDisplay({
         <h2 className="text-xs font-bold uppercase tracking-widest text-brand-red">Generated Output</h2>
         <button
             onClick={handleCopy}
-            className="hover:text-brand-red transition-colors text-white"
-            title="Copy to clipboard"
+            className="hover:text-brand-red transition-colors text-white flex items-center gap-2"
+            title="Copy prompt"
         >
+            <span className="text-[10px] font-bold uppercase">Copy Prompt</span>
             {copied ? <CheckIcon /> : <ClipboardIcon />}
         </button>
       </div>
       
-      {/* Prompt Text Section - Fixed max height to ensure space for image */}
-      <div className="p-6 bg-gray-50 dark:bg-gray-900 overflow-y-auto max-h-[150px] border-b border-gray-200 dark:border-gray-800 custom-scrollbar shrink-0">
-        <p className="text-black dark:text-gray-200 font-mono text-sm leading-relaxed whitespace-pre-wrap break-words">{prompt}</p>
+      {/* Text Section - Split Columns */}
+      <div className="grid grid-cols-1 md:grid-cols-2 h-[200px] shrink-0 border-b border-gray-200 dark:border-gray-800">
+        {/* English Prompt */}
+        <div className="p-4 bg-gray-50 dark:bg-gray-900 overflow-y-auto custom-scrollbar border-r border-gray-200 dark:border-gray-800">
+            <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">Prompt (English)</span>
+            <p className="text-black dark:text-gray-200 font-mono text-xs leading-relaxed whitespace-pre-wrap break-words">{prompt}</p>
+        </div>
+        
+        {/* Chinese Translation */}
+        <div className="p-4 bg-white dark:bg-black overflow-y-auto custom-scrollbar">
+            <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-2">Translation (Chinese)</span>
+            <p className="text-gray-700 dark:text-gray-400 font-sans text-xs leading-relaxed whitespace-pre-wrap break-words">
+                {translation || "No translation available."}
+            </p>
+        </div>
       </div>
 
       {selectedModel === AiModel.NANO_BANANA && (

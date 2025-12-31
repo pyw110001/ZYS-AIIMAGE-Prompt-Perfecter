@@ -12,7 +12,10 @@ export default function App(): React.ReactNode {
   const [textInput, setTextInput] = useState<string>('');
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
   const [selectedModel, setSelectedModel] = useState<AiModel>(AiModel.MIDJOURNEY);
+  
   const [generatedPrompt, setGeneratedPrompt] = useState<string>('');
+  const [generatedTranslation, setGeneratedTranslation] = useState<string>('');
+  
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -99,17 +102,20 @@ export default function App(): React.ReactNode {
     setIsLoading(true);
     setError(null);
     setGeneratedPrompt('');
+    setGeneratedTranslation('');
     setGeneratedImage(null);
 
     try {
-      const result = await generatePrompt(selectedModel, textInput, uploadedImage);
-      setGeneratedPrompt(result);
+      const { prompt, translation } = await generatePrompt(selectedModel, textInput, uploadedImage);
+      setGeneratedPrompt(prompt);
+      setGeneratedTranslation(translation);
 
       // Add to history
       const newItem: HistoryItem = {
         id: crypto.randomUUID(),
         model: selectedModel,
-        prompt: result,
+        prompt: prompt,
+        translation: translation,
         originalInput: textInput || (uploadedImage ? 'Visual Analysis' : ''),
         timestamp: Date.now(),
       };
@@ -165,8 +171,9 @@ export default function App(): React.ReactNode {
 
   const handleSelectHistory = (item: HistoryItem) => {
       setGeneratedPrompt(item.prompt);
+      setGeneratedTranslation(item.translation || '');
       setSelectedModel(item.model);
-      setGeneratedImage(null); // Reset image on history select
+      setGeneratedImage(null); 
       if (item.originalInput !== 'Visual Analysis') {
           setTextInput(item.originalInput);
       }
@@ -228,6 +235,7 @@ export default function App(): React.ReactNode {
              <div className="h-full p-6">
                 <ResultDisplay 
                     prompt={generatedPrompt} 
+                    translation={generatedTranslation}
                     isLoading={isLoading} 
                     selectedModel={selectedModel}
                     onGenerateImage={handleImageGeneration}
